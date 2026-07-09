@@ -65,7 +65,7 @@ app.post("/login", async (req, res) => {
         const { email, password } = req.body;
 
         const admin = await Admin.findOne({ email });
-        console.log(admin)
+        // console.log(admin);
 
         if (!admin) {
 
