@@ -73,6 +73,24 @@ export const getStudentById = async (req, res) => {
     }
 };
 
+
+// search student
+export const searchStudent = async (req, res) => {
+    try {
+        const { query } = req.query;
+
+        const students = await studentService.searchStudentService(query);
+        
+
+        // res.render("students", { students });
+        // OR
+        res.status(200).json(students);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
 // Update Student
 export const updateStudent = async (req, res) => {
 

@@ -11,6 +11,7 @@ import {
     addStudent,
     getStudents,
     getStudentById,
+    searchStudent,
     updateStudent,
     deleteStudent
 } from "../controllers/studentController.js";
@@ -42,8 +43,12 @@ router.post("/api/add-students", auth, addStudent);
 // Get all students
 router.get("/api/students", auth, getStudents);
 
+// search student by name,city,course
+router.get("/api/students/search", auth, searchStudent);
+
 // Get a single student by ID
 router.get("/api/students/:id", auth, getStudentById);
+
 
 // Update a student by ID
 router.put("/api/students/:id", auth, updateStudent);
