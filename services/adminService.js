@@ -1,4 +1,5 @@
 import Admin from "../models/Admin.js";
+import bcrypt from "bcrypt";
 
 // Login Admin
 export const loginAdmin = async (email, password) => {
@@ -9,7 +10,9 @@ export const loginAdmin = async (email, password) => {
         return null;
     }
 
-    if (admin.password !== password) {
+    const isMatch = await bcrypt.compare(password, admin.password);
+
+    if (!isMatch) {
         return null;
     }
 
