@@ -28,6 +28,9 @@ app.use(express.json());
 // Parse form data
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static assets
+app.use(express.static("public"));
+
 // ==============================
 // View Engine
 // ==============================
