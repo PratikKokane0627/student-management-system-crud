@@ -277,11 +277,6 @@
                 padding-right: 16px;
             }
 
-            .table {
-
-                min-width: 680px;
-            }
-
             .card-header {
 
                 padding: 22px 18px;
@@ -310,6 +305,72 @@
 
             .card-body {
                 padding: 16px 14px !important;
+            }
+
+            .table-container {
+                max-height: none;
+                overflow: visible;
+                border-radius: 0;
+            }
+
+            .table {
+                min-width: 0;
+                border-collapse: separate;
+                border-spacing: 0 12px;
+            }
+
+            .table thead {
+                display: none;
+            }
+
+            .table tbody tr {
+                display: block;
+                background: #fff;
+                border: 1px solid #dee2e6;
+                border-radius: 10px;
+                box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+                overflow: hidden;
+            }
+
+            .table tbody td {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 16px;
+                width: 100%;
+                padding: 12px 14px;
+                border-bottom: 1px solid #eef1f4;
+                font-size: 14px;
+                text-align: right;
+                word-break: break-word;
+            }
+
+            .table tbody td::before {
+                content: attr(data-label);
+                flex: 0 0 86px;
+                color: #495057;
+                font-weight: 700;
+                text-align: left;
+            }
+
+            .table tbody td:last-child {
+                align-items: center;
+                border-bottom: 0;
+                flex-wrap: wrap;
+                text-align: right;
+            }
+
+            .table tbody td:last-child::before {
+                padding-top: 6px;
+            }
+
+            .table tbody td:last-child .btn {
+                margin: 0 0 8px 0 !important;
+                width: 104px;
+            }
+
+            .table tbody td:last-child .btn:last-child {
+                margin-bottom: 0 !important;
             }
 
             footer small {
@@ -524,17 +585,17 @@
             table.innerHTML += `
             <tr>
 
-                <td>${student.name}</td>
+                <td data-label="Name">${student.name}</td>
 
-                <td>${student.email}</td>
+                <td data-label="Email">${student.email}</td>
 
-                <td>${student.age}</td>
+                <td data-label="Age">${student.age}</td>
 
-                <td>${student.city}</td>
+                <td data-label="City">${student.city}</td>
 
-                <td>${student.course}</td>
+                <td data-label="Course">${student.course}</td>
 
-                <td class="text-center">
+                <td class="text-center" data-label="Actions">
 
                     <button
                         class="btn btn-warning btn-sm me-2"
