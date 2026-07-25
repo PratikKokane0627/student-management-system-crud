@@ -1,0 +1,197 @@
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router'
+import toast from 'react-hot-toast';
+import api from '../api/axios';
+
+const UpdateStudent = () => {
+  const {id}=useParams();
+  const navigate=useNavigate()
+  const[form,setForm]=useState({
+    name: "",
+    email: "",
+    age: "",
+    city: "",
+    course: "",
+  });
+
+  useEffect(()=>{
+    getUser();
+  },[])
+
+  let getUser= async()=>{
+    try{
+         const response= await api.get(`/students/${id}`)
+         console.log(response.data);
+         setForm(response.data.data)
+
+    }catch(err){
+          console.log(err)
+    }
+   
+  }
+
+  let handleChange=(e)=>{
+      setForm({
+        ...form,
+        [e.target.name]:e.target.value,
+      })
+  }
+
+ const handleUpdate = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await api.put(`/students/${id}`, form);
+
+    console.log(response.data);
+
+    toast.success(
+      response.data.message || "Student updated successfully"
+    );
+
+    
+ navigate("/list");
+   
+   
+  } catch (error) {
+    console.error(error);
+
+    toast.error(
+      error.response?.data?.message ||
+        "Failed to update student"
+    );
+  }
+};
+
+  return (
+    <div className="container py-5">
+      <div className="row justify-content-center">
+        <div className="col-12 col-md-9 col-lg-7">
+          <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
+            {/* Header */}
+            <div className="card-header bg-primary text-white text-center py-4">
+              <h2 className="mb-0 fw-bold">
+                <i className="bi bi-pencil-square me-2"></i>
+                Update Student
+              </h2>
+            </div>
+
+            {/* Form */}
+            <div className="card-body p-4">
+              <form  onSubmit={handleUpdate}>
+                {/* Name */}
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label fw-semibold">
+                    <i className="bi bi-person-fill text-primary me-2"></i>
+                    Student Name
+                  </label>
+
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                   value={form.name}
+                   onChange={handleChange}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Student Name"
+                  />
+                </div>
+
+                {/* Email */}
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label fw-semibold">
+                    <i className="bi bi-envelope-fill text-primary me-2"></i>
+                    Email
+                  </label>
+
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={form.email}
+                     onChange={handleChange}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Student Email"
+                  />
+                </div>
+
+                {/* Age */}
+                <div className="mb-3">
+                  <label htmlFor="age" className="form-label fw-semibold">
+                    <i className="bi bi-calendar-event-fill text-primary me-2"></i>
+                    Age
+                  </label>
+
+                  <input
+                    type="number"
+                    id="age"
+                    name="age"
+                    value={form.age}
+                     onChange={handleChange}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Age"
+                  />
+                </div>
+
+                {/* City */}
+                <div className="mb-3">
+                  <label htmlFor="city" className="form-label fw-semibold">
+                    <i className="bi bi-geo-alt-fill text-primary me-2"></i>
+                    City
+                  </label>
+
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    value={form.city}
+                     onChange={handleChange}
+                    className="form-control form-control-lg"
+                    placeholder="Enter City"
+                  />
+                </div>
+
+                {/* Course */}
+                <div className="mb-4">
+                  <label htmlFor="course" className="form-label fw-semibold">
+                    <i className="bi bi-book-fill text-primary me-2"></i>
+                    Course
+                  </label>
+
+                  <input
+                    type="text"
+                    id="course"
+                    name="course"
+                    value={form.course}
+                     onChange={handleChange}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Student Course"
+                  />
+                </div>
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg w-100 fw-semibold"
+                >
+                  <i className="bi bi-check-circle-fill me-2"></i>
+                  Update Student
+                </button>
+              </form>
+            </div>
+
+            {/* Footer */}
+            <div className="card-footer bg-light text-center py-3">
+              <Link to="/list" className="btn btn-secondary fw-semibold">
+                <i className="bi bi-arrow-left-circle-fill me-2"></i>
+                Back to Student List
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default UpdateStudent
