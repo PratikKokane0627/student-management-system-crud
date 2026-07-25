@@ -1,30 +1,38 @@
 import * as studentService from "../services/studentService.js";
 
-// Render Students Page
-export const studentsPage = (req, res) => {
-    res.render("students");
-};
-
-// Render Add Page
-export const addPage = (req, res) => {
-    res.render("add");
-};
-
-// Render Update Page
-export const updatePage = (req, res) => {
-    res.render("update");
-};
-
-// Add Student
 export const addStudent = async (req, res) => {
 
     try {
 
-        await studentService.addStudent(req.body);
+        const student = await studentService.addStudent(req.body);
 
-        res.json({
+        res.status(201).json({
             success: true,
-            message: "Student added successfully."
+            message: "Student added successfully.",
+            data: student
+        });
+
+    } catch (err) {
+        const statusCode = err.code === 11000 ? 409 : 400;
+
+        res.status(statusCode).json({
+            success: false,
+            message: err.code === 11000 ? "Email already exists." : err.message
+        });
+
+    }
+};
+
+export const getStudents = async (req, res) => {
+
+    try {
+
+        const students = await studentService.getStudents(req.query.search);
+
+        res.status(200).json({
+            success: true,
+            count: students.length,
+            data: students
         });
 
     } catch (err) {
@@ -37,70 +45,22 @@ export const addStudent = async (req, res) => {
     }
 };
 
-// Get All Students
-export const getStudents = async (req, res) => {
-
-    try {
-
-        const students = await studentService.getStudents();
-
-        res.json(students);
-
-    } catch (err) {
-
-        res.status(500).json({
-            message: err.message
-        });
-
-    }
-};
-
-// Get Student By ID
 export const getStudentById = async (req, res) => {
 
     try {
 
         const student = await studentService.getStudentById(req.params.id);
 
-        res.json(student);
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found."
+            });
+        }
 
-    } catch (err) {
-
-        res.status(500).json({
-            message: err.message
-        });
-
-    }
-};
-
-
-// search student
-export const searchStudent = async (req, res) => {
-    try {
-        const { query } = req.query;
-
-        const students = await studentService.searchStudentService(query);
-        
-
-        // res.render("students", { students });
-        // OR
-        res.status(200).json(students);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal Server Error");
-    }
-};
-
-// Update Student
-export const updateStudent = async (req, res) => {
-
-    try {
-
-        await studentService.updateStudent(req.params.id, req.body);
-
-        res.json({
+        res.status(200).json({
             success: true,
-            message: "Student updated successfully."
+            data: student
         });
 
     } catch (err) {
@@ -113,16 +73,52 @@ export const updateStudent = async (req, res) => {
     }
 };
 
-// Delete Student
+export const updateStudent = async (req, res) => {
+
+    try {
+
+        const student = await studentService.updateStudent(req.params.id, req.body);
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found."
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Student updated successfully.",
+            data: student
+        });
+
+    } catch (err) {
+
+        res.status(400).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+};
+
 export const deleteStudent = async (req, res) => {
 
     try {
 
-        await studentService.deleteStudent(req.params.id);
+        const student = await studentService.deleteStudent(req.params.id);
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found."
+            });
+        }
 
         res.json({
             success: true,
-            message: "Student deleted successfully."
+            message: "Student deleted successfully.",
+            data: student
         });
 
     } catch (err) {

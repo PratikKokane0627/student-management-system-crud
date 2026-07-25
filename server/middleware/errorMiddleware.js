@@ -1,11 +1,12 @@
-// Error handling middleware
 const errorMiddleware = (err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
 
     console.error(err.stack);
 
-    res.status(500).json({
+    res.status(statusCode).json({
         success: false,
-        message: err.message || "Internal Server Error"
+        message
     });
 
 };

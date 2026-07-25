@@ -1,94 +1,69 @@
 import express from "express";
 import session from "express-session";
 import "dotenv/config";
-
-// Import error handling middleware
+import cors from "cors";
+import morgan from "morgan";
+import connectDb from "./db.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 
-// Import MongoDB connection
-import connectDb from "./db.js";
-
-// Import route files
 import adminRoutes from "./routes/adminRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 
-// Create Express application
 const app = express();
 
-// Connect to MongoDB
 connectDb();
 
-// ==============================
-// Middleware
-// ==============================
-
-// Parse incoming JSON data
-app.use(express.json());
-
-// Parse form data
-app.use(express.urlencoded({ extended: true }));
-
-// Serve static assets
-app.use(express.static("public"));
-
-// ==============================
-// View Engine
-// ==============================
-
-// Set EJS as the template engine
-app.set("view engine", "ejs");
-
-// ==============================
-// Session Middleware
-// ==============================
-
 app.use(
-    session({
-        // Secret key used to sign the session ID
-        secret: process.env.SESSION_SECRET,
-
-        // Don't save the session if nothing changed
-        resave: false,
-
-        // Don't create an empty session
-        saveUninitialized: false,
-
-        // Session expires after 10 minutes
-        cookie: {
-            maxAge: 600000
-        }
-    })
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
 
-// ==============================
-// Routes
-// ==============================
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
+app.use(morgan("dev"));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "student-api-secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      maxAge: 10 * 60 * 1000,
+      sameSite: "lax",
+    },
+  })
+);
 
-// Admin routes
-app.use("/", adminRoutes);
-
-// Student routes
-app.use("/", studentRoutes);
-
-// 404 Route
-app.use((req, res) => {
-    res.status(404).render("404");
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Student Management API",
+    routes: {
+      auth: "/api/auth",
+      students: "/api/students",
+    },
+  });
 });
 
-// ==============================
-// Error Handling Middleware
-// ==============================
+app.use("/api/auth", adminRoutes);
+app.use("/api/students", studentRoutes);
 
-// Handles all application errors
-// Must be registered after all routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
+
 app.use(errorMiddleware);
-
-// ==============================
-// Start Server
-// ==============================
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

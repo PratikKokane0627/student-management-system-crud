@@ -1,21 +1,5 @@
 import * as adminService from "../services/adminService.js";
 
-// Home Route
-export const home = (req, res) => {
-
-    if (req.session.admin) {
-        return res.redirect("/students-list");
-    }
-
-    res.redirect("/login");
-};
-
-// Render Login Page
-export const showLogin = (req, res) => {
-    res.render("login");
-};
-
-// Login Admin
 export const login = async (req, res) => {
 
     try {
@@ -25,7 +9,10 @@ export const login = async (req, res) => {
         const admin = await adminService.loginAdmin(email, password);
 
         if (!admin) {
-            return res.send("Invalid Email or Password");
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password."
+            });
         }
 
         req.session.admin = {
@@ -33,20 +20,37 @@ export const login = async (req, res) => {
             email: admin.email
         };
 
-        res.redirect("/students-list");
+        res.status(200).json({
+            success: true,
+            message: "Login successful.",
+            data: req.session.admin
+        });
 
     } catch (err) {
 
-        res.status(500).send(err.message);
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
 
     }
 };
 
-// Logout Admin
 export const logout = (req, res) => {
 
     req.session.destroy(() => {
-        res.redirect("/login");
+        res.clearCookie("connect.sid");
+        res.status(200).json({
+            success: true,
+            message: "Logout successful."
+        });
     });
 
+};
+
+export const getProfile = (req, res) => {
+    res.status(200).json({
+        success: true,
+        data: req.session.admin
+    });
 };

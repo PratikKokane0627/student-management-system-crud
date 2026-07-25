@@ -1,42 +1,36 @@
 import Student from "../models/Student.js";
 
-// Add Student
 export const addStudent = async (studentData) => {
     return await Student.create(studentData);
 };
 
-// Get All Students
-export const getStudents = async () => {
-    return await Student.find();
+export const getStudents = async (query) => {
+    const search = query?.trim();
+
+    if (!search) {
+        return await Student.find().sort({ createdAt: -1 });
+    }
+
+    return await Student.find({
+        $or: [
+            { name: { $regex: search, $options: "i" } },
+            { city: { $regex: search, $options: "i" } },
+            { course: { $regex: search, $options: "i" } }
+        ]
+    }).sort({ createdAt: -1 });
 };
 
-// Get Student By ID
 export const getStudentById = async (id) => {
     return await Student.findById(id);
 };
 
-// search student by name,city,course
-export const searchStudentService = async (query) => {
-
-    return await Student.find({
-        $or: [
-            { name: { $regex: query, $options: "i" } },
-            { city: { $regex: query, $options: "i" } },
-            { course: { $regex: query, $options: "i" } }
-        ]
-    });
-
-};
-
-
-// Update Student
 export const updateStudent = async (id, studentData) => {
     return await Student.findByIdAndUpdate(id, studentData, {
-        new: true
+        new: true,
+        runValidators: true
     });
 };
 
-// Delete Student
 export const deleteStudent = async (id) => {
     return await Student.findByIdAndDelete(id);
 };
