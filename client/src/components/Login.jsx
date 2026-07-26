@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import axios from "axios";
 import toast from "react-hot-toast";
 import api from "../api/axios";
 
@@ -29,18 +28,11 @@ const Login = ({ setIsLogin }) => {
     setLoading(true);
 
     try {
-      const response = await api.post(
-        "http://localhost:3200/api/auth/login",
-        {
-          email: form.email,
-          password: form.password,
-          remember: form.remember,
-        },
-        {
-          // Required for session cookie authentication
-          withCredentials: true,
-        }
-      );
+      const response = await api.post("/auth/login", {
+        email: form.email,
+        password: form.password,
+        remember: form.remember,
+      });
 
       localStorage.setItem("isLogin", "true");
 
@@ -70,7 +62,7 @@ const Login = ({ setIsLogin }) => {
     <div className="login-page d-flex justify-content-center align-items-center px-3 py-5">
       <div className="card login-card border-0 shadow-lg overflow-hidden">
         {/* Header */}
-        <div className="login-header bg-primary text-white text-center py-5 px-3">
+        <div className="login-header bg-primary text-white text-center px-3">
           <i className="bi bi-person-circle login-user-icon"></i>
 
           <h1 className="fw-bold mt-3 mb-2">
@@ -83,7 +75,7 @@ const Login = ({ setIsLogin }) => {
         </div>
 
         {/* Form */}
-        <div className="card-body bg-white p-4 p-md-5">
+        <div className="card-body bg-white">
           <form onSubmit={handleSubmit}>
             {/* Email */}
             <div className="mb-4">

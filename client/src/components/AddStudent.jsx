@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import toast from 'react-hot-toast'
 import api from '../api/axios'
 const AddStudent = () => {
@@ -43,6 +43,8 @@ const AddStudent = () => {
 
    }catch (error) {
     console.error(error);
+
+    if (error.response?.status === 401) return;
 
     toast.error(
       error.response?.data?.message ||
@@ -171,13 +173,8 @@ const AddStudent = () => {
               </form>
             </div>
 
-            {/* Footer */}
-            <div className="card-footer bg-light text-center py-3">
-              <Link to="/list" className="btn btn-secondary fw-semibold">
-                <i className="bi bi-arrow-left-circle-fill me-2"></i>
-                Back to Student List
-              </Link>
-            </div>
+            
+            
           </div>
         </div>
       </div>

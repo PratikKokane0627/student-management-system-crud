@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import { Toaster } from "react-hot-toast";
 
@@ -10,15 +10,33 @@ import UpdateStudent from "./components/UpdateStudent";
 import Login from "./components/Login";
 
 function App() {
-  const [isLogin, setIsLogin] = useState(
-    localStorage.getItem("isLogin") === "true"
-  );
+  const [isLogin, setIsLogin] = useState(false);
+
+  useEffect(() => {
+    const handleAuthLogout = () => {
+      setIsLogin(false);
+    };
+
+    const handleStorageChange = (event) => {
+      if (event.key === "isLogin" && event.newValue !== "true") {
+        setIsLogin(false);
+      }
+    };
+
+    window.addEventListener("auth:logout", handleAuthLogout);
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("auth:logout", handleAuthLogout);
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   return (
     <>
       <Routes>
         {/* Login route */}
-        <Route
+        <Route 
           path="/login"
           element={
             isLogin ? (

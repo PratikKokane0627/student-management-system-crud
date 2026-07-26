@@ -5,26 +5,49 @@
 
 .login-card {
   width: 100%;
-  max-width: 525px;
-  border-radius: 22px;
+  max-width: 420px;
+  border-radius: 18px;
 }
 
 .login-user-icon {
-  font-size: 76px;
+  font-size: 55px;
+}
+
+.login-header {
+  padding: 28px 20px !important;
 }
 
 .login-header h1 {
-  font-size: 40px;
+  font-size: 30px;
+}
+
+.login-header p {
+  font-size: 16px !important;
+}
+
+.login-card .card-body {
+  padding: 28px !important;
+}
+
+.login-card .form-label {
+  font-size: 16px !important;
+  font-weight: 500;
 }
 
 .login-card .form-control {
-  min-height: 60px;
-  border-radius: 12px;
+  min-height: 48px;
+  border-radius: 10px;
+  font-size: 16px;
 }
 
 .login-card .btn {
-  min-height: 60px;
-  border-radius: 12px;
+  min-height: 48px;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.login-card .form-check-label {
+  font-size: 16px !important;
 }
 
 .login-card .form-control:focus {
@@ -33,11 +56,27 @@
 }
 
 @media (max-width: 576px) {
+  .login-page {
+    padding: 20px !important;
+  }
+
+  .login-card {
+    max-width: 370px;
+  }
+
+  .login-header {
+    padding: 24px 16px !important;
+  }
+
   .login-header h1 {
-    font-size: 32px;
+    font-size: 26px;
   }
 
   .login-user-icon {
-    font-size: 65px;
+    font-size: 48px;
+  }
+
+  .login-card .card-body {
+    padding: 22px !important;
   }
 }

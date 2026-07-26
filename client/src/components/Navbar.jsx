@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router";
 import toast from "react-hot-toast";
+import api from "../api/axios";
 
 const Navbar = ({ setIsLogin }) => {
   const navigate = useNavigate();
@@ -9,12 +10,19 @@ const Navbar = ({ setIsLogin }) => {
       isActive ? "text-warning" : "text-white"
     }`;
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLogin");
-    setIsLogin(false);
-
-    toast.success("Logout successful");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+      toast.success("Logout successful");
+    } catch (error) {
+      if (error.response?.status !== 401) {
+        toast.error(error.response?.data?.message || "Logout failed");
+      }
+    } finally {
+      localStorage.removeItem("isLogin");
+      setIsLogin(false);
+      navigate("/login", { replace: true });
+    }
   };
 
   return (

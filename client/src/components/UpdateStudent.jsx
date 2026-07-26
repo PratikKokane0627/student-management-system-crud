@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import toast from 'react-hot-toast';
 import api from '../api/axios';
 
@@ -15,20 +15,21 @@ const UpdateStudent = () => {
   });
 
   useEffect(()=>{
-    getUser();
-  },[])
+    const getUser= async()=>{
+      try{
+           const response= await api.get(`/students/${id}`)
+          //  console.log(response.data);
+           setForm(response.data.data)
 
-  let getUser= async()=>{
-    try{
-         const response= await api.get(`/students/${id}`)
-         console.log(response.data);
-         setForm(response.data.data)
-
-    }catch(err){
-          console.log(err)
+      }catch(err){
+            console.log(err)
+            if (err.response?.status === 401) return;
+      }
+     
     }
-   
-  }
+
+    getUser();
+  },[id])
 
   let handleChange=(e)=>{
       setForm({
@@ -55,6 +56,8 @@ const UpdateStudent = () => {
    
   } catch (error) {
     console.error(error);
+
+    if (error.response?.status === 401) return;
 
     toast.error(
       error.response?.data?.message ||
@@ -180,13 +183,7 @@ const UpdateStudent = () => {
               </form>
             </div>
 
-            {/* Footer */}
-            <div className="card-footer bg-light text-center py-3">
-              <Link to="/list" className="btn btn-secondary fw-semibold">
-                <i className="bi bi-arrow-left-circle-fill me-2"></i>
-                Back to Student List
-              </Link>
-            </div>
+           
           </div>
         </div>
       </div>
