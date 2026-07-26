@@ -26,15 +26,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(morgan("dev"));
+app.set("trust proxy", 1);
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "student-api-secret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+
     cookie: {
       httpOnly: true,
+
+      // HTTPS only in production
+      secure: process.env.NODE_ENV === "production",
+
+      // Required when frontend and backend use different domains
+      sameSite:
+        process.env.NODE_ENV === "production" ? "none" : "lax",
+
+      // 10 minutes
       maxAge: 10 * 60 * 1000,
-      sameSite: "lax",
     },
   })
 );
