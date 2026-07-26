@@ -1,5 +1,6 @@
 import express from "express";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 import "dotenv/config";
 import cors from "cors";
 import morgan from "morgan";
@@ -10,12 +11,21 @@ import adminRoutes from "./routes/adminRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 
 const app = express();
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+const isHttpsClient = CLIENT_URL.startsWith("https://");
+const requiredEnv = ["MONGODB_URI", "SESSION_SECRET"];
+
+for (const key of requiredEnv) {
+  if (!process.env[key]) {
+    throw new Error(`${key} is required`);
+  }
+}
 
 connectDb();
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: CLIENT_URL,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -25,7 +35,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.use(morgan("dev"));
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.set("trust proxy", 1);
 
 app.use(
@@ -33,16 +43,20 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: "sessions",
+      ttl: 10 * 60,
+    }),
 
     cookie: {
       httpOnly: true,
 
-      // HTTPS only in production
-      secure: process.env.NODE_ENV === "production",
+      // Secure cookies need HTTPS. Keep local http://localhost working.
+      secure: isHttpsClient,
 
       // Required when frontend and backend use different domains
-      sameSite:
-        process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: isHttpsClient ? "none" : "lax",
 
       // 10 minutes
       maxAge: 10 * 60 * 1000,
